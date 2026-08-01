@@ -220,6 +220,11 @@ button:disabled{opacity:.38;cursor:not-allowed}
 .veil.on{display:grid}
 .veil h3{font-family:var(--display);font-size:clamp(21px,6.4vw,27px);margin:0 0 8px;line-height:1.35}
 .veil p{font-size:13px;color:#C8BAF0;margin:0 0 18px;line-height:1.7}
+.veil .acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.veil .share{background:#F2ECFF;border-color:#F2ECFF;color:#150A2E;display:inline-flex;align-items:center;gap:7px}
+.veil .share:hover{background:#fff;border-color:#fff}
+.veil .share svg{width:14px;height:14px;fill:currentColor}
+.veil .share[hidden]{display:none}
 .burst{position:absolute;inset:0;overflow:hidden;border-radius:26px;pointer-events:none}
 .burst i{position:absolute;width:12px;height:12px;border-radius:50%;bottom:-20px;animation:burstUp 1.6s ease-out forwards}
 @keyframes burstUp{to{transform:translateY(-115%) scale(.4);opacity:0}}
@@ -254,7 +259,13 @@ button:disabled{opacity:.38;cursor:not-allowed}
       <div style="position:relative">
         <h3 id="veilTitle"></h3>
         <p id="veilText"></p>
-        <button id="veilBtn"></button>
+        <div class="acts">
+          <button id="veilBtn"></button>
+          <button id="veilShare" class="share" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            シェア
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -494,12 +505,41 @@ function refreshDex(){
   topNameEl.textContent=LV[top].n+'スライム';
 }
 
+/* ---------- share ---------- */
+/* share:pure */
+const SHARE_URL = "https://slime.fujiemon.dev/";
+const SHARE_TAG = "#にじスラ";
+// top は到達した最大スライムの値、name はその LV 名（LV を参照しないので純粋）
+function shareText({score, top, name}){
+  const head = top >= 4096 ? `${name}スライムが生まれた！🌑`
+             : top >= 2048 ? `${name}スライムが生まれた！🌈`
+             : `${name}スライムまで育った！`;
+  return `${head}\nスコア ${(Number(score)||0).toLocaleString('en-US')}\n\n${SHARE_TAG}`;
+}
+function shareUrl(result){
+  const q = new URLSearchParams({text: shareText(result), url: SHARE_URL});
+  return `https://x.com/intent/post?${q}`;
+}
+/* /share:pure */
+
+// 到達済みの最大スライム。LV に無い値は やみ に丸める。
+function topReached(){
+  const vals=[2, ...seen, ...tiles.map(t=>t.v)];
+  return Math.min(Math.max(...vals), 4096);
+}
+function openShare(){
+  const top=topReached();
+  window.open(shareUrl({score, top, name:LV[top].n}), '_blank', 'noopener');
+}
+
 /* ---------- overlays ---------- */
-function showVeil(title,text,btn,onBtn){
+function showVeil(title,text,btn,onBtn,withShare){
   document.getElementById('veilTitle').textContent=title;
   document.getElementById('veilText').textContent=text;
   const b=document.getElementById('veilBtn');
-  b.textContent=btn; b.onclick=onBtn; veil.classList.add('on'); b.focus();
+  b.textContent=btn; b.onclick=onBtn;
+  document.getElementById('veilShare').hidden=!withShare;
+  veil.classList.add('on'); b.focus();
 }
 function confetti(hueFn,count){
   const burst=document.getElementById('burst'); burst.innerHTML='';
@@ -512,14 +552,14 @@ function confetti(hueFn,count){
 }
 function celebrate(){
   confetti(()=>`hsl(${Math.random()*360} 95% 68%)`,26);
-  showVeil('にじいろスライム誕生！','でも、その先にもう一体いるらしい。もう一度くっつけたら何が出る？','つづける',()=>veil.classList.remove('on'));
+  showVeil('にじいろスライム誕生！','でも、その先にもう一体いるらしい。もう一度くっつけたら何が出る？','つづける',()=>veil.classList.remove('on'),true);
 }
 function awaken(){
   confetti(()=>`hsl(${268+Math.random()*60} 90% ${45+Math.random()*25}%)`,32);
-  showVeil('やみスライム、覚醒。','図鑑コンプリート。虹の向こうにいたのはこいつでした。','つづける',()=>veil.classList.remove('on'));
+  showVeil('やみスライム、覚醒。','図鑑コンプリート。虹の向こうにいたのはこいつでした。','つづける',()=>veil.classList.remove('on'),true);
 }
 function over(){
-  showVeil('スライムが動けない…','どこにもくっつけられません。もう一度そだてましょう。','はじめから',reset);
+  showVeil('スライムが動けない…','どこにもくっつけられません。もう一度そだてましょう。','はじめから',reset,true);
 }
 
 /* ---------- input ---------- */
@@ -540,6 +580,7 @@ tank.addEventListener('touchend',e=>{
   move(Math.abs(dx)>Math.abs(dy) ? (dx>0?'right':'left') : (dy>0?'down':'up'));
 });
 document.getElementById('btnNew').onclick=reset;
+document.getElementById('veilShare').onclick=openShare;
 btnUndo.onclick=()=>{
   if(!prev||busy) return;
   tiles=prev.tiles; score=prev.score; seen=prev.seen; prev=null;
