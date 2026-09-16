@@ -8,7 +8,7 @@
 ## PV
 ![PV](media/pv.gif)
 
-音声付きフル版: [media/pv.mp4](media/pv.mp4)
+音声付きフル版: [YouTubeで見る](https://youtube.com/shorts/6Sq2AqZ3y8E)
 
 ## あそびかた
 矢印キー / WASD、またはスワイプでスライムを動かします。
