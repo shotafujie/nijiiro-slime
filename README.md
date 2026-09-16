@@ -6,7 +6,7 @@
 ▶ https://slime.fujiemon.dev/
 
 ## PV
-<video src="media/pv.mp4" controls width="360"></video>
+▶ [PVを再生](media/pv.mp4)
 
 ## あそびかた
 矢印キー / WASD、またはスワイプでスライムを動かします。
