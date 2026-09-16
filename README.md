@@ -6,7 +6,9 @@
 ▶ https://slime.fujiemon.dev/
 
 ## PV
-▶ [PVを再生](media/pv.mp4)
+![PV](media/pv.gif)
+
+音声付きフル版: [media/pv.mp4](media/pv.mp4)
 
 ## あそびかた
 矢印キー / WASD、またはスワイプでスライムを動かします。
