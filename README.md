@@ -5,6 +5,9 @@
 
 ▶ https://slime.fujiemon.dev/
 
+## PV
+<video src="media/pv.mp4" controls width="360"></video>
+
 ## あそびかた
 矢印キー / WASD、またはスワイプでスライムを動かします。
 同じ数字のスライムがぶつかると合体して、色が一段派手になります。
